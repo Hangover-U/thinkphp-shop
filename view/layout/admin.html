@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {block name="title"}管理员控制台 - 电子产品与摩托车商城{/block}
+    </title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+        --secondary-gradient: linear-gradient(135deg, #a777e3, #8569d9);
+        --accent-gradient: linear-gradient(135deg, #43cbff, #9708cc);
+        --button-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+        --background-color: #e6e9f0;
+        --card-bg: #e6e9f0;
+        --text-primary: #333333;
+        --text-secondary: #666666;
+        --text-muted: #888888;
+        --shadow-color-light: rgba(255, 255, 255, 0.7);
+        --shadow-color-dark: rgba(174, 174, 192, 0.4);
+        --sidebar-bg: #e6e9f0;
+        --sidebar-active: linear-gradient(
+          135deg,
+          rgba(110, 142, 251, 0.2),
+          rgba(167, 119, 227, 0.2)
+        );
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 70px 0 0; /* 与导航栏高度对齐 */
+        background-color: var(--sidebar-bg);
+        width: 240px;
+        box-shadow: 5px 0 15px var(--shadow-color-dark);
+        border-radius: 0 20px 20px 0;
+      }
+
+      .sidebar-sticky {
+        position: relative;
+        top: 0;
+        height: calc(100vh - 70px); /* 调整高度 */
+        padding-top: 0.5rem;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .navbar-brand {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .navbar .navbar-toggler {
+        top: 0.25rem;
+        right: 1rem;
+      }
+
+      .main-content {
+        padding-top: 70px;
+      }
+
+      @media (min-width: 768px) {
+        .main-content {
+          margin-left: 240px;
+        }
+      }
+
+      /* 导航菜单样式增强 */
+      .sidebar .nav-link {
+        padding: 12px 20px;
+        color: var(--text-primary);
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        margin: 5px 10px;
+        border-radius: 10px;
+        box-shadow: 3px 3px 6px var(--shadow-color-dark),
+          -3px -3px 6px var(--shadow-color-light);
+      }
+
+      .sidebar .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+        color: #6e8efb;
+        border-left-color: #6e8efb;
+        transform: translateX(5px);
+      }
+
+      .sidebar .nav-link.active {
+        background: var(--sidebar-active);
+        color: #6e8efb;
+        border-left-color: #6e8efb;
+        font-weight: bold;
+        box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+          inset -3px -3px 5px var(--shadow-color-light);
+      }
+
+      .sidebar .nav-icon {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+      }
+
+      .sidebar .nav-item {
+        margin-bottom: 8px;
+      }
+
+      .sidebar .nav-item:first-child {
+        margin-top: 15px;
+      }
+
+      /* 添加分隔线 */
+      .sidebar .nav-item:nth-child(3),
+      .sidebar .nav-item:nth-child(5) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+      }
+
+      /* 自定义导航图标 */
+      .icon-dashboard::before {
+        content: "🏠";
+      }
+      .icon-products::before {
+        content: "📦";
+      }
+      .icon-add-product::before {
+        content: "➕";
+      }
+      .icon-orders::before {
+        content: "📋";
+      }
+      .icon-shipping::before {
+        content: "🚚";
+      }
+      .icon-users::before {
+        content: "👥";
+      }
+      .icon-add-user::before {
+        content: "👤";
+      }
+
+      /* 新拟态导航栏 */
+      .navbar {
+        background: var(--primary-gradient);
+        box-shadow: 0 5px 15px var(--shadow-color-dark);
+        height: 70px;
+      }
+
+      /* 新拟态按钮 */
+      .btn-outline-light,
+      .btn-danger {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: white;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2),
+          -2px -2px 5px rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .btn-outline-light {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 5px 8px 15px rgba(0, 0, 0, 0.3),
+          -2px -2px 5px rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ff6b6b, #dc3545);
+      }
+
+      .btn-danger:hover {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        transform: translateY(-3px);
+        box-shadow: 5px 8px 15px rgba(0, 0, 0, 0.3),
+          -2px -2px 5px rgba(255, 255, 255, 0.1);
+      }
+
+      /* 卡片样式 */
+      .card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 10px 10px 20px var(--shadow-color-dark),
+          -10px -10px 20px var(--shadow-color-light);
+      }
+
+      .card-header {
+        background: var(--primary-gradient);
+        color: white;
+        border-bottom: none;
+        padding: 15px 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .card-body {
+        padding: 20px;
+      }
+
+      /* 表格样式 */
+      .table {
+        background: var(--card-bg);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+          inset -3px -3px 5px var(--shadow-color-light);
+      }
+
+      .table thead th {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 15px;
+        font-weight: 500;
+      }
+
+      .table td {
+        border-color: rgba(0, 0, 0, 0.05);
+        padding: 15px;
+        vertical-align: middle;
+      }
+
+      /* 表单控件 */
+      .form-control {
+        background-color: var(--card-bg);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 15px;
+        box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+          inset -3px -3px 5px var(--shadow-color-light);
+        transition: all 0.3s ease;
+        color: var(--text-primary);
+      }
+
+      .form-control:focus {
+        box-shadow: inset 4px 4px 8px var(--shadow-color-dark),
+          inset -4px -4px 8px var(--shadow-color-light);
+        background-color: var(--card-bg);
+      }
+
+      /* 标题渐变效果 */
+      .gradient-heading {
+        font-weight: 700;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.5rem;
+      }
+    </style>
+    {block name="css"}{/block}
+  </head>
+  <body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-dark fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/admin">
+          电子产品与摩托车商城 - 管理控制台
+        </a>
+        <button
+          class="navbar-toggler d-md-none collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex">
+          <a href="/" class="btn btn-outline-light me-2">前台首页</a>
+          <a href="/user/logout" class="btn btn-danger">退出登录</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- 侧边栏 -->
+        <nav
+          id="sidebarMenu"
+          class="col-md-3 col-lg-2 d-md-block sidebar collapse"
+        >
+          <div class="sidebar-sticky pt-3">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="/admin">
+                  <span class="nav-icon icon-dashboard"></span> 控制台首页
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/product_list">
+                  <span class="nav-icon icon-products"></span> 商品管理
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/add_product">
+                  <span class="nav-icon icon-add-product"></span> 添加商品
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/order_list">
+                  <span class="nav-icon icon-orders"></span> 订单管理
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/order_list?status=1">
+                  <span class="nav-icon icon-shipping"></span> 待发货订单
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/user_list">
+                  <span class="nav-icon icon-users"></span> 用户管理
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/add_user">
+                  <span class="nav-icon icon-add-user"></span> 添加用户
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- 主要内容 -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+          <h2 class="gradient-heading mt-4 mb-4">
+            {block name="page_title"}{/block}
+          </h2>
+          {block name="content"}{/block}
+        </main>
+      </div>
+    </div>
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // 设置当前页面对应菜单的激活状态
+        var currentPath = window.location.pathname;
+        $(".sidebar .nav-link").each(function () {
+          var linkPath = $(this).attr("href");
+          if (
+            currentPath === linkPath ||
+            (currentPath.indexOf(linkPath) === 0 && linkPath !== "/admin")
+          ) {
+            $(this).addClass("active");
+          }
+        });
+
+        // 特殊处理带参数的待发货订单链接
+        if (
+          currentPath === "/admin/order_list" &&
+          window.location.search === "?status=1"
+        ) {
+          $('.sidebar .nav-link[href="/admin/order_list?status=1"]').addClass(
+            "active"
+          );
+          $('.sidebar .nav-link[href="/admin/order_list"]').removeClass(
+            "active"
+          );
+        }
+      });
+    </script>
+    {block name="js"}{/block}
+  </body>
+</html>

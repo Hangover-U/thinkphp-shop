@@ -1,0 +1,617 @@
+{extend name="layout/base" /} {block name="title"}订单详情 -
+在线购物系统{/block} {block name="content"}
+
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb p-3 neomorphic-card mb-4">
+      <li class="breadcrumb-item">
+        <a href="/" class="text-decoration-none">首页</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="/order" class="text-decoration-none">我的订单</a>
+      </li>
+      <li class="breadcrumb-item active gradient-text" aria-current="page">
+        订单详情
+      </li>
+    </ol>
+  </nav>
+
+  <h2 class="mb-4 gradient-heading">订单详情</h2>
+
+  <div class="neomorphic-card mb-4">
+    <div class="card-header p-3">
+      <h4 class="mb-0 gradient-heading">订单信息</h4>
+      <div class="header-line"></div>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="info-item">
+            <span class="info-label">订单号：</span>
+            <span class="info-value">{$order.order_no}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">订单状态：</span>
+            <span class="info-value">
+              {switch name="order.status"} {case value="0"}<span
+                class="status-badge status-waiting"
+                >待付款</span
+              >{/case} {case value="1"}<span class="status-badge status-paid"
+                >已付款</span
+              >{/case} {case value="2"}<span class="status-badge status-shipped"
+                >已发货</span
+              >{/case} {case value="3"}<span
+                class="status-badge status-completed"
+                >已完成</span
+              >{/case} {case value="4"}<span
+                class="status-badge status-cancelled"
+                >已取消</span
+              >{/case} {/switch}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">创建时间：</span>
+            <span class="info-value">{$order.create_time}</span>
+          </div>
+          {if $order.pay_time}
+          <div class="info-item">
+            <span class="info-label">支付时间：</span>
+            <span class="info-value">{$order.pay_time}</span>
+          </div>
+          {/if} {if $order.delivery_time}
+          <div class="info-item">
+            <span class="info-label">发货时间：</span>
+            <span class="info-value">{$order.delivery_time}</span>
+          </div>
+          {/if} {if $order.complete_time}
+          <div class="info-item">
+            <span class="info-label">完成时间：</span>
+            <span class="info-value">{$order.complete_time}</span>
+          </div>
+          {/if}
+        </div>
+        <div class="col-md-6">
+          <div class="info-item">
+            <span class="info-label">收货人：</span>
+            <span class="info-value">{$order.consignee}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">联系电话：</span>
+            <span class="info-value">{$order.mobile}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">收货地址：</span>
+            <span class="info-value">{$order.address}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">订单金额：</span>
+            <span class="info-value gradient-price"
+              >￥{$order.total_amount}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      {if $order.status == 0}
+      <div class="mt-4 action-buttons">
+        <button
+          class="neomorphic-btn btn-success pay-order"
+          data-id="{$order.id}"
+        >
+          <i class="pay-icon">💳</i> 立即付款
+        </button>
+        <button
+          class="neomorphic-btn btn-danger cancel-order"
+          data-id="{$order.id}"
+        >
+          <i class="cancel-icon">❌</i> 取消订单
+        </button>
+      </div>
+      {elseif $order.status == 2}
+      <div class="mt-4 action-buttons">
+        <button
+          class="neomorphic-btn btn-success confirm-order"
+          data-id="{$order.id}"
+        >
+          <i class="confirm-icon">✅</i> 确认收货
+        </button>
+      </div>
+      {/if}
+    </div>
+  </div>
+
+  <div class="neomorphic-card">
+    <div class="card-header p-3">
+      <h4 class="mb-0 gradient-heading">商品信息</h4>
+      <div class="header-line"></div>
+    </div>
+    <div class="card-body p-4">
+      <div class="table-responsive">
+        <table class="table order-products-table">
+          <thead>
+            <tr
+              class="table-header"
+              style="background-color: rgb(230, 233, 240) !important"
+            >
+              <th
+                class="header-cell"
+                style="background-color: rgb(230, 233, 240) !important"
+              >
+                商品
+              </th>
+              <th
+                class="header-cell"
+                style="background-color: rgb(230, 233, 240) !important"
+              >
+                单价
+              </th>
+              <th
+                class="header-cell"
+                style="background-color: rgb(230, 233, 240) !important"
+              >
+                数量
+              </th>
+              <th
+                class="header-cell"
+                style="background-color: rgb(230, 233, 240) !important"
+              >
+                小计
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {volist name="order.order_details" id="detail"}
+            <tr class="product-item">
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="product-img-container">
+                    <img
+                      src="{$detail.product_image}"
+                      alt="{$detail.product_name}"
+                      class="product-img"
+                    />
+                  </div>
+                  <div class="ms-3">
+                    <h5 class="product-name">{$detail.product_name}</h5>
+                  </div>
+                </div>
+              </td>
+              <td class="product-price">￥{$detail.product_price}</td>
+              <td class="product-quantity">{$detail.quantity}</td>
+              <td class="product-total">
+                <span class="gradient-price">￥{$detail.total_price}</span>
+              </td>
+            </tr>
+            {/volist}
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="3" class="text-end"><strong>总计：</strong></td>
+              <td class="order-total gradient-total-price">
+                ￥{$order.total_amount}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #6e8efb;
+  }
+
+  /* 渐变文字 */
+  .gradient-text {
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #6e8efb;
+  }
+
+  /* 面包屑 */
+  .breadcrumb {
+    border-radius: 15px;
+    padding: 15px;
+  }
+
+  .breadcrumb-item a {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 5;
+  }
+
+  .breadcrumb-item a:hover {
+    color: #6e8efb;
+    text-decoration: none;
+  }
+
+  /* 卡片头部线条 */
+  .header-line {
+    height: 3px;
+    background: var(--accent-gradient);
+    margin-top: 10px;
+    border-radius: 3px;
+  }
+
+  /* 订单信息项 */
+  .info-item {
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-right: 10px;
+    min-width: 90px;
+  }
+
+  .info-value {
+    color: var(--text-primary);
+  }
+
+  /* 订单状态标签 */
+  .status-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: white;
+    background: var(--button-gradient);
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 50;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+
+  .status-waiting {
+    background: linear-gradient(135deg, #ff6b6b, #ff9a9e);
+  }
+
+  .status-paid {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+  }
+
+  .status-shipped {
+    background: linear-gradient(135deg, #0061ff, #60efff);
+  }
+
+  .status-completed {
+    background: linear-gradient(135deg, #0ba360, #3cba92);
+  }
+
+  .status-cancelled {
+    background: linear-gradient(135deg, #ff4e50, #f9d423);
+  }
+
+  /* 操作按钮 */
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #84fab0, #8fd3f4);
+    color: #0e5924;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, #8fd3f4, #84fab0);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    color: #9c1a1a;
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(135deg, #fad0c4, #ff9a9e);
+  }
+
+  .pay-icon,
+  .cancel-icon,
+  .confirm-icon {
+    margin-right: 8px;
+  }
+
+  /* 商品表格 */
+  .order-products-table {
+    border-collapse: separate;
+    border-spacing: 0 15px;
+    margin-bottom: 0;
+    width: 100%;
+    margin-top: -10px; /* 减少表头和内容之间的间距 */
+  }
+
+  .table-header {
+    background: rgb(230, 233, 240) !important;
+    border-radius: 15px;
+    box-shadow: 3px 3px 6px var(--shadow-color-dark),
+      -3px -3px 6px var(--shadow-color-light);
+    margin-bottom: 5px;
+  }
+
+  .table-header th {
+    color: var(--text-primary);
+    font-weight: 700;
+    padding: 15px;
+    border: none;
+    letter-spacing: 0.5px;
+  }
+
+  .table-header th:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+
+  .table-header th:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  /* 添加表头样式 */
+  .order-products-table thead th {
+    background: rgb(230, 233, 240);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* 表头单元格样式 */
+  .header-cell {
+    background: rgb(230, 233, 240) !important;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+  }
+
+  .header-cell::after {
+    content: "";
+    position: absolute;
+    bottom: 5px;
+    left: 15%;
+    width: 70%;
+    height: 2px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .product-item {
+    background: rgb(230, 233, 240);
+    border-radius: 15px;
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px var(--shadow-color-light);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+  }
+
+  .product-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 8px 8px 15px var(--shadow-color-dark),
+      -8px -8px 15px var(--shadow-color-light);
+    background: rgb(220, 225, 235);
+  }
+
+  .product-item td {
+    padding: 15px;
+    border: none;
+    vertical-align: middle;
+    background: rgb(230, 233, 240);
+  }
+
+  .product-item td:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+
+  .product-item td:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  /* 商品图片 */
+  .product-img-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 3px 3px 6px var(--shadow-color-dark),
+      -3px -3px 6px var(--shadow-color-light);
+  }
+
+  .product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 商品名称 */
+  .product-name {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0;
+    transition: all 0.3s ease;
+    color: #6e8efb;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  /* 价格样式 */
+  .product-price,
+  .product-quantity {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
+  }
+
+  .product-quantity {
+    background: #f0f2f5;
+    padding: 5px 10px;
+    border-radius: 50px;
+    display: inline-block;
+    box-shadow: inset 2px 2px 5px var(--shadow-color-dark),
+      inset -2px -2px 5px var(--shadow-color-light);
+  }
+
+  .gradient-price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #966edc;
+  }
+
+  .gradient-total-price {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #966edc;
+  }
+
+  /* 总计行 */
+  .total-row {
+    background: transparent;
+    font-size: 1.1rem;
+  }
+
+  .total-row td {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 20px;
+    color: var(--text-primary);
+    background: transparent !important;
+  }
+
+  .order-total {
+    font-weight: 800;
+    font-size: 1.4rem;
+  }
+
+  /* 修复小计列样式 */
+  .product-total {
+    background: rgb(230, 233, 240) !important; /* 强制使用与行相同的背景色 */
+  }
+
+  /* 确保表格内所有单元格背景一致 */
+  .order-products-table tbody td {
+    background: rgb(230, 233, 240);
+  }
+
+  /* 确保表格行悬停时所有单元格背景一致 */
+  .product-item:hover td {
+    background: rgb(220, 225, 235);
+  }
+
+  /* 确保总计行不受表格行样式影响 */
+  .order-products-table tfoot td {
+    background: transparent !important;
+  }
+
+  /* 强制应用表头背景色 */
+  .table-header,
+  .table-header th,
+  .order-products-table thead,
+  .order-products-table thead tr,
+  .order-products-table thead th {
+    background-color: rgb(230, 233, 240) !important;
+  }
+</style>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 支付订单
+    $(".pay-order").click(function () {
+      var orderId = $(this).data("id");
+
+      if (confirm("确定要支付这个订单吗？")) {
+        $.ajax({
+          url: "/order/pay",
+          type: "POST",
+          data: { order_id: orderId },
+          dataType: "json",
+          success: function (res) {
+            if (res.code === 1) {
+              alert(res.msg);
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          },
+          error: function () {
+            alert("服务器错误，请稍后再试");
+          },
+        });
+      }
+    });
+
+    // 取消订单
+    $(".cancel-order").click(function () {
+      var orderId = $(this).data("id");
+
+      if (confirm("确定要取消这个订单吗？")) {
+        $.ajax({
+          url: "/order/cancel",
+          type: "POST",
+          data: { order_id: orderId },
+          dataType: "json",
+          success: function (res) {
+            if (res.code === 1) {
+              alert(res.msg);
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          },
+          error: function () {
+            alert("服务器错误，请稍后再试");
+          },
+        });
+      }
+    });
+
+    // 确认收货
+    $(".confirm-order").click(function () {
+      var orderId = $(this).data("id");
+
+      if (confirm("确认已收到商品吗？")) {
+        $.ajax({
+          url: "/order/complete",
+          type: "POST",
+          data: { order_id: orderId },
+          dataType: "json",
+          success: function (res) {
+            if (res.code === 1) {
+              alert(res.msg);
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          },
+          error: function () {
+            alert("服务器错误，请稍后再试");
+          },
+        });
+      }
+    });
+  });
+</script>
+{/block}

@@ -1,0 +1,210 @@
+{extend name="layout/base" /} {block name="title"}用户登录 -
+在线购物系统{/block} {block name="content"}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="neomorphic-card login-card">
+        <div class="card-header p-3 text-center">
+          <h3 class="mb-0 gradient-heading">用户登录</h3>
+          <div class="header-line"></div>
+        </div>
+        <div class="card-body p-4">
+          <form id="loginForm">
+            <div class="mb-4">
+              <label for="username" class="form-label">用户名</label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  class="form-control neomorphic-input"
+                  id="username"
+                  name="username"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="password" class="form-label">密码</label>
+              <div class="input-wrapper">
+                <input
+                  type="password"
+                  class="form-control neomorphic-input"
+                  id="password"
+                  name="password"
+                  required
+                />
+              </div>
+            </div>
+            <input
+              type="hidden"
+              name="redirect"
+              value="{$redirect|default=''}"
+            />
+            <div class="d-grid gap-2">
+              <button type="submit" class="neomorphic-btn login-btn">
+                登录
+              </button>
+            </div>
+          </form>
+          <div class="mt-4 text-center">
+            <p>
+              还没有账号？
+              <a
+                href="/user/register{$redirect ? '?redirect='.$redirect : ''}"
+                class="gradient-link"
+                >立即注册</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 卡片头部线条 */
+  .header-line {
+    height: 3px;
+    background: var(--accent-gradient);
+    margin: 10px auto 0;
+    width: 50px;
+    border-radius: 3px;
+  }
+
+  /* 登录卡片 */
+  .login-card {
+    max-width: 450px;
+    margin: 50px auto;
+    border-radius: 20px;
+  }
+
+  /* 表单控件 */
+  .input-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .neomorphic-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: var(--text-primary) !important;
+    box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+      inset -3px -3px 5px var(--shadow-color-light);
+    transition: all 0.3s ease;
+  }
+
+  .neomorphic-input:focus {
+    outline: none;
+    box-shadow: inset 4px 4px 8px var(--shadow-color-dark),
+      inset -4px -4px 8px var(--shadow-color-light);
+    background-color: var(--card-bg) !important;
+  }
+
+  /* 覆盖导航栏搜索框样式 */
+  .login-card .form-control {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+      inset -3px -3px 5px var(--shadow-color-light) !important;
+  }
+
+  .login-card .form-control:focus {
+    background: var(--card-bg) !important;
+    box-shadow: inset 4px 4px 8px var(--shadow-color-dark),
+      inset -4px -4px 8px var(--shadow-color-light) !important;
+  }
+
+  .login-card .form-control::placeholder {
+    color: var(--text-muted) !important;
+  }
+
+  /* 表单标签 */
+  .form-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  /* 登录按钮 */
+  .login-btn {
+    font-size: 1.1rem;
+    padding: 12px;
+  }
+
+  /* 渐变链接 */
+  .gradient-link {
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .gradient-link::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-gradient);
+    bottom: -2px;
+    left: 0;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: right;
+  }
+
+  .gradient-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* 确保所有按钮可点击 */
+  button,
+  .neomorphic-btn {
+    position: relative;
+    z-index: 5;
+  }
+</style>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    $("#loginForm").submit(function (e) {
+      e.preventDefault();
+
+      $.ajax({
+        url: "/user/login",
+        type: "POST",
+        data: $(this).serialize(),
+        dataType: "json",
+        success: function (res) {
+          if (res.code === 1) {
+            // 登录成功
+            // 强制刷新页面，确保Cookie生效
+            window.location.href =
+              res.data && res.data.url ? res.data.url : "/";
+          } else {
+            alert(res.msg);
+          }
+        },
+        error: function () {
+          alert("服务器错误，请稍后再试");
+        },
+      });
+    });
+  });
+</script>
+{/block}

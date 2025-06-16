@@ -1,0 +1,368 @@
+{extend name="layout/base" /} {block name="title"}电子产品与摩托车商城{/block}
+{block name="content"}
+<!-- 轮播图 -->
+<div class="mb-5">
+  <div
+    id="carouselExampleIndicators"
+    class="carousel slide neomorphic-card"
+    data-bs-ride="carousel"
+  >
+    <div class="carousel-indicators">
+      <button
+        type="button"
+        data-bs-target="#carouselExampleIndicators"
+        data-bs-slide-to="0"
+        class="active"
+      ></button>
+      <button
+        type="button"
+        data-bs-target="#carouselExampleIndicators"
+        data-bs-slide-to="1"
+      ></button>
+    </div>
+    <div class="carousel-inner rounded-4 overflow-hidden">
+      <div class="carousel-item active">
+        <img
+          src="/static/uploads/banner/banner1.jpg"
+          class="d-block w-100"
+          alt="电子产品"
+          style="height: 450px; object-fit: cover"
+        />
+        <div class="carousel-caption d-none d-md-block">
+          <div
+            class="caption-content p-4 rounded-4"
+            style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px)"
+          >
+            <h2
+              class="fw-bold"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5)"
+            >
+              电子产品专区
+            </h2>
+            <p class="lead">最新科技产品，尽在我们的电子产品专区</p>
+            <a href="/products?category_id=1" class="neomorphic-btn"
+              >立即探索</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img
+          src="/static/uploads/banner/banner2.jpg"
+          class="d-block w-100"
+          alt="摩托车"
+          style="height: 450px; object-fit: cover"
+        />
+        <div class="carousel-caption d-none d-md-block">
+          <div
+            class="caption-content p-4 rounded-4"
+            style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px)"
+          >
+            <h2
+              class="fw-bold"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5)"
+            >
+              摩托车专区
+            </h2>
+            <p class="lead">各类高性能摩托车，满足您的速度与激情</p>
+            <a href="/products?category_id=2" class="neomorphic-btn"
+              >立即探索</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      class="carousel-control-prev"
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide="prev"
+    >
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button
+      class="carousel-control-next"
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide="next"
+    >
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
+
+<!-- 商品分类 -->
+<div class="row mb-5">
+  <div class="col-12">
+    <div class="neomorphic-card gradient-border">
+      <div class="card-header p-3">
+        <h4 class="mb-0 gradient-heading">商品分类</h4>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          {php} $parentCategories = []; $childCategories = []; foreach
+          ($categories as $category) { if ($category['parent_id'] == 0) {
+          $parentCategories[] = $category; } else {
+          $childCategories[$category['parent_id']][] = $category; } } {/php}
+          {foreach $parentCategories as $parent}
+          <div class="col-md-6 mb-4">
+            <h5 class="gradient-heading mb-3">{$parent.name}</h5>
+            <div class="row">
+              {if isset($childCategories[$parent.id])} {foreach
+              $childCategories[$parent.id] as $child}
+              <div class="col-6 col-lg-4 mb-3">
+                <a href="/products?category_id={$child.id}" class="category-btn"
+                  >{$child.name}</a
+                >
+              </div>
+              {/foreach} {/if}
+            </div>
+          </div>
+          {/foreach}
+        </div>
+        <div class="text-center mt-4">
+          <a href="/products" class="neomorphic-btn">查看全部商品</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 推荐商品 -->
+<div class="mb-5">
+  <div class="neomorphic-card gradient-border">
+    <div class="card-header p-3">
+      <h4 class="mb-0 gradient-heading">推荐商品</h4>
+      <div class="header-line"></div>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        {foreach $recommendProducts as $product}
+        <div class="col-6 col-md-3 col-lg-2 mb-4">
+          <div
+            class="product-item h-100 position-relative gradient-border"
+            data-category="{$product.category_id < 7 ? 'electronics' : 'motorcycle'}"
+          >
+            <!-- 推荐标签 -->
+            <span class="product-badge badge bg-danger">推荐</span>
+            <div class="product-img-container">
+              <img
+                src="{$product.image}"
+                class="product-img"
+                alt="{$product.name}"
+              />
+            </div>
+            <div class="product-info p-3">
+              <h5 class="product-title">{$product.name}</h5>
+              <p class="price">￥{$product.price}</p>
+              <div class="text-center mt-3">
+                <a href="/product/{$product.id}" class="neomorphic-btn btn-sm"
+                  >查看详情</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {/foreach}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 最新商品 -->
+<div class="mb-4">
+  <div class="neomorphic-card gradient-border">
+    <div class="card-header p-3">
+      <h4 class="mb-0 gradient-heading">最新商品</h4>
+      <div class="header-line"></div>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        {foreach $newProducts as $product}
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+          <div
+            class="product-item h-100 position-relative gradient-border"
+            data-category="{$product.category_id < 7 ? 'electronics' : 'motorcycle'}"
+          >
+            <!-- 新品标签 -->
+            <span class="product-badge badge bg-success">新品</span>
+            <div class="product-img-container">
+              <img
+                src="{$product.image}"
+                class="product-img"
+                alt="{$product.name}"
+              />
+            </div>
+            <div class="product-info p-3">
+              <h5 class="product-title">{$product.name}</h5>
+              <p class="manufacturer">{$product.manufacturer}</p>
+              <p class="price">￥{$product.price}</p>
+              <div class="text-center mt-3">
+                <a href="/product/{$product.id}" class="neomorphic-btn"
+                  >查看详情</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {/foreach}
+      </div>
+    </div>
+  </div>
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 首页卡片头部线条 */
+  .header-line {
+    height: 3px;
+    background: var(--accent-gradient);
+    margin-top: 10px;
+    border-radius: 3px;
+  }
+
+  /* 卡片头部样式 */
+  .card-header {
+    background: none;
+    border-bottom: none;
+  }
+
+  /* 分类按钮 */
+  .category-btn {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    background: var(--card-bg);
+    border-radius: 12px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px var(--shadow-color-light);
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  .category-btn:hover {
+    transform: translateY(-3px);
+    color: white !important;
+    text-decoration: none;
+  }
+
+  .category-btn:hover::before {
+    opacity: 1;
+  }
+
+  .category-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gradient);
+    border-radius: 12px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  /* 产品信息容器 */
+  .product-info {
+    background: var(--card-bg);
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+  }
+
+  /* 制造商 */
+  .manufacturer {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+  }
+
+  /* 按钮尺寸 */
+  .neomorphic-btn.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* 轮播图样式增强 */
+  .carousel {
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .carousel-indicators {
+    bottom: 20px;
+  }
+
+  .carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 0 5px;
+  }
+
+  .carousel-indicators button.active {
+    background-color: white;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    margin: 0 20px;
+    transition: all 0.3s ease;
+  }
+
+  .carousel:hover .carousel-control-prev,
+  .carousel:hover .carousel-control-next {
+    opacity: 0.8;
+  }
+</style>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 添加到购物车
+    $(".add-to-cart").click(function () {
+      var productId = $(this).data("id");
+
+      $.ajax({
+        url: "/cart/add",
+        type: "POST",
+        data: { product_id: productId, quantity: 1 },
+        dataType: "json",
+        success: function (res) {
+          if (res.code === 1) {
+            alert(res.msg);
+          } else {
+            alert(res.msg);
+          }
+        },
+        error: function () {
+          alert("服务器错误，请稍后再试");
+        },
+      });
+    });
+  });
+</script>
+{/block}

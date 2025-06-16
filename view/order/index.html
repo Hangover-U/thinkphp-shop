@@ -1,0 +1,446 @@
+{extend name="layout/base" /} {block name="title"}我的订单 -
+在线购物系统{/block} {block name="content"}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb p-3 neomorphic-card mb-4">
+      <li class="breadcrumb-item">
+        <a href="/" class="text-decoration-none">首页</a>
+      </li>
+      <li class="breadcrumb-item active gradient-text" aria-current="page">
+        我的订单
+      </li>
+    </ol>
+  </nav>
+
+  <h2 class="mb-4 gradient-heading">我的订单</h2>
+
+  <div class="neomorphic-card">
+    <div class="card-header p-3">
+      <div class="order-tabs">
+        <a class="order-tab {if $status === null}active{/if}" href="/order"
+          >全部订单</a
+        >
+        <a
+          class="order-tab {if $status === 0}active{/if}"
+          href="/order?status=0"
+          >待付款</a
+        >
+        <a
+          class="order-tab {if $status === 1}active{/if}"
+          href="/order?status=1"
+          >已付款</a
+        >
+        <a
+          class="order-tab {if $status === 2}active{/if}"
+          href="/order?status=2"
+          >已发货</a
+        >
+        <a
+          class="order-tab {if $status === 3}active{/if}"
+          href="/order?status=3"
+          >已完成</a
+        >
+        <a
+          class="order-tab {if $status === 4}active{/if}"
+          href="/order?status=4"
+          >已取消</a
+        >
+      </div>
+    </div>
+    <div class="card-body p-4">
+      {if $orders->isEmpty()}
+      <div class="empty-state text-center">
+        <i class="empty-icon">📋</i>
+        <h4 class="mt-3 mb-3 gradient-heading">暂无订单</h4>
+        <p class="text-muted">您还没有相关订单，快去选购商品吧！</p>
+        <a href="/products" class="neomorphic-btn mt-3">去购物</a>
+      </div>
+      {else}
+      <div class="order-list">
+        {volist name="orders" id="order"}
+        <div class="order-item">
+          <div class="order-header">
+            <div class="order-no">
+              订单号: <span class="fw-bold">{$order.order_no}</span>
+            </div>
+            <div class="order-date">{$order.create_time}</div>
+          </div>
+          <div class="order-body">
+            <div class="order-products">
+              {volist name="order.order_details" id="detail" length="1"}
+              <div class="d-flex align-items-center">
+                <div class="order-img-container">
+                  <img
+                    src="{$detail.product_image}"
+                    alt="{$detail.product_name}"
+                    class="order-product-img"
+                  />
+                </div>
+                <div class="ms-3">
+                  <div class="product-name">{$detail.product_name}</div>
+                  {if count($order['order_details']) > 1}
+                  <div class="product-count">
+                    等{:count($order['order_details'])}件商品
+                  </div>
+                  {/if}
+                </div>
+              </div>
+              {/volist}
+            </div>
+            <div class="order-price gradient-price">
+              ￥{$order.total_amount}
+            </div>
+            <div class="order-status">
+              {switch name="order.status"} {case value="0"}<span
+                class="status-badge status-waiting"
+                >待付款</span
+              >{/case} {case value="1"}<span class="status-badge status-paid"
+                >已付款</span
+              >{/case} {case value="2"}<span class="status-badge status-shipped"
+                >已发货</span
+              >{/case} {case value="3"}<span
+                class="status-badge status-completed"
+                >已完成</span
+              >{/case} {case value="4"}<span
+                class="status-badge status-cancelled"
+                >已取消</span
+              >{/case} {/switch}
+            </div>
+            <div class="order-actions">
+              <a href="/order/detail/{$order.id}" class="neomorphic-btn btn-sm"
+                >查看详情</a
+              >
+              {if $order.status == 0}
+              <button
+                class="neomorphic-btn btn-sm btn-success pay-order"
+                data-id="{$order.id}"
+              >
+                立即付款
+              </button>
+              <button
+                class="neomorphic-btn btn-sm btn-danger cancel-order"
+                data-id="{$order.id}"
+              >
+                取消订单
+              </button>
+              {/if}
+            </div>
+          </div>
+        </div>
+        {/volist}
+      </div>
+      <div class="mt-4 d-flex justify-content-center">{$orders|raw}</div>
+      {/if}
+    </div>
+  </div>
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #6e8efb;
+  }
+
+  /* 渐变文字 */
+  .gradient-text {
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #6e8efb;
+  }
+
+  /* 面包屑 */
+  .breadcrumb {
+    border-radius: 15px;
+    padding: 15px;
+  }
+
+  .breadcrumb-item a {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 5;
+  }
+
+  .breadcrumb-item a:hover {
+    color: #6e8efb;
+    text-decoration: none;
+  }
+
+  /* 订单标签页 */
+  .order-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .order-tab {
+    padding: 10px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--card-bg);
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 6px var(--shadow-color-dark),
+      -3px -3px 6px var(--shadow-color-light);
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 5;
+  }
+
+  .order-tab:hover {
+    transform: translateY(-3px);
+    color: #6e8efb;
+    text-decoration: none;
+  }
+
+  .order-tab.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.1),
+      inset -3px -3px 5px rgba(255, 255, 255, 0.05);
+  }
+
+  /* 订单列表 */
+  .order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .order-item {
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px var(--shadow-color-light);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .order-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 7px 7px 15px var(--shadow-color-dark),
+      -7px -7px 15px var(--shadow-color-light);
+  }
+
+  /* 订单头部 */
+  .order-header {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.02);
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .order-no {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .order-date {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  /* 订单内容 */
+  .order-body {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    align-items: center;
+    gap: 15px;
+  }
+
+  @media (max-width: 768px) {
+    .order-body {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+
+  /* 订单商品 */
+  .order-img-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 2px 2px 5px var(--shadow-color-dark),
+      -2px -2px 5px var(--shadow-color-light);
+  }
+
+  .order-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .product-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* 订单价格 */
+  .gradient-price {
+    font-weight: 700;
+    font-size: 1.2rem;
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #966edc;
+  }
+
+  /* 订单状态标签 */
+  .status-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: white;
+    background: var(--button-gradient);
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 50;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+
+  .status-waiting {
+    background: linear-gradient(135deg, #ff6b6b, #ff9a9e);
+  }
+
+  .status-paid {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+  }
+
+  .status-shipped {
+    background: linear-gradient(135deg, #0061ff, #60efff);
+  }
+
+  .status-completed {
+    background: linear-gradient(135deg, #0ba360, #3cba92);
+  }
+
+  .status-cancelled {
+    background: linear-gradient(135deg, #ff4e50, #f9d423);
+  }
+
+  /* 订单操作按钮 */
+  .order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* 按钮样式 */
+  .btn-success {
+    background: linear-gradient(135deg, #84fab0, #8fd3f4);
+    color: #2b8a3e;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, #8fd3f4, #84fab0);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    color: #c85450;
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(135deg, #fad0c4, #ff9a9e);
+  }
+
+  .btn-sm {
+    padding: 8px 15px;
+    font-size: 0.85rem;
+  }
+
+  /* 空订单状态 */
+  .empty-state {
+    padding: 40px 0;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  /* 确保所有按钮可点击 */
+  button,
+  .neomorphic-btn,
+  .order-tab {
+    position: relative;
+    z-index: 5;
+  }
+</style>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 支付订单
+    $(".pay-order").click(function () {
+      var orderId = $(this).data("id");
+
+      if (confirm("确定要支付这个订单吗？")) {
+        $.ajax({
+          url: "/order/pay",
+          type: "POST",
+          data: { order_id: orderId },
+          dataType: "json",
+          success: function (res) {
+            if (res.code === 1) {
+              alert(res.msg);
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          },
+          error: function () {
+            alert("服务器错误，请稍后再试");
+          },
+        });
+      }
+    });
+
+    // 取消订单
+    $(".cancel-order").click(function () {
+      var orderId = $(this).data("id");
+
+      if (confirm("确定要取消这个订单吗？")) {
+        $.ajax({
+          url: "/order/cancel",
+          type: "POST",
+          data: { order_id: orderId },
+          dataType: "json",
+          success: function (res) {
+            if (res.code === 1) {
+              alert(res.msg);
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          },
+          error: function () {
+            alert("服务器错误，请稍后再试");
+          },
+        });
+      }
+    });
+  });
+</script>
+{/block}

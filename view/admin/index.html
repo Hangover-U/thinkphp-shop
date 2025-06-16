@@ -1,0 +1,252 @@
+{extend name="layout/admin" /} {block name="title"}控制台首页 -
+管理员控制台{/block} {block name="content"}
+<div class="container mt-4">
+  <h1 class="mb-4">控制台首页</h1>
+
+  <div class="row">
+    <div class="col-md-3 mb-4">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h5 class="card-title">商品总数</h5>
+          <p class="card-text display-4">{$productCount}</p>
+          <a href="/admin/product_list" class="btn btn-light">查看商品</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">订单总数</h5>
+          <p class="card-text display-4">{$orderCount}</p>
+          <a href="/admin/order_list" class="btn btn-light">查看订单</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card bg-warning text-dark">
+        <div class="card-body">
+          <h5 class="card-title">待发货订单</h5>
+          <p class="card-text display-4">{$pendingOrderCount}</p>
+          <a href="/admin/order_list?status=1" class="btn btn-light"
+            >处理订单</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <h5 class="card-title">用户总数</h5>
+          <p class="card-text display-4">{$userCount}</p>
+          <a href="/admin/user_list" class="btn btn-light">查看用户</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增数据可视化部分 -->
+  <div class="row mt-4">
+    <!-- 订单趋势图 -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">最近7天订单趋势</h5>
+        </div>
+        <div class="card-body">
+          <div class="order-chart">
+            <div
+              class="d-flex justify-content-between"
+              style="height: 200px; align-items: flex-end"
+            >
+              {foreach $orderStats as $stat}
+              <div class="order-bar" style="flex: 1; text-align: center">
+                <div
+                  class="progress"
+                  style="height: {$stat.count ? min($stat.count * 20, 180) : 5}px; width: 30px; margin: 0 auto; background-color: #28a745; border-radius: 3px;"
+                ></div>
+                <div class="mt-2">{$stat.date}</div>
+                <div class="small">{$stat.count}单</div>
+              </div>
+              {/foreach}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 父类商品分布图 -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">主要分类商品分布</h5>
+        </div>
+        <div class="card-body">
+          <div class="category-stats">
+            {foreach $categoryStats as $category} {if $category.type ==
+            'parent'}
+            <div class="mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-1"
+              >
+                <span class="fw-bold">{$category.name}</span>
+                <span>{$category.count}件</span>
+              </div>
+              <div class="progress">
+                <div
+                  class="progress-bar bg-primary"
+                  role="progressbar"
+                  style="width: {$productCount ? min($category.count / $productCount * 100, 100) : 0}%;"
+                  aria-valuenow="{$category.count}"
+                  aria-valuemin="0"
+                  aria-valuemax="{$productCount}"
+                ></div>
+              </div>
+            </div>
+            {/if} {/foreach}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- 子分类商品分布图 -->
+    <div class="col-md-12 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">子分类商品分布</h5>
+        </div>
+        <div class="card-body">
+          <div class="category-stats">
+            {foreach $categoryStats as $category} {if $category.type == 'child'}
+            <div class="mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-1"
+              >
+                <span
+                  >{$category.name}
+                  <small class="text-muted"
+                    >({$category.parent_name})</small
+                  ></span
+                >
+                <span>{$category.count}件</span>
+              </div>
+              <div class="progress">
+                <div
+                  class="progress-bar bg-success"
+                  role="progressbar"
+                  style="width: {$productCount ? min($category.count / $productCount * 100, 100) : 0}%;"
+                  aria-valuenow="{$category.count}"
+                  aria-valuemin="0"
+                  aria-valuemax="{$productCount}"
+                ></div>
+              </div>
+            </div>
+            {/if} {/foreach}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 热门商品排行 -->
+  <div class="card mt-4 mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">热门商品排行</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>排名</th>
+              <th>商品图片</th>
+              <th>商品名称</th>
+              <th>价格</th>
+              <th>销量</th>
+              <th>库存</th>
+            </tr>
+          </thead>
+          <tbody>
+            {foreach $hotProducts as $key=>$product}
+            <tr>
+              <td>{$key+1}</td>
+              <td>
+                <img
+                  src="{$product.image}"
+                  width="50"
+                  height="50"
+                  class="img-thumbnail"
+                />
+              </td>
+              <td>{$product.name}</td>
+              <td>￥{$product.price}</td>
+              <td>
+                <div class="progress" style="height: 20px">
+                  <div
+                    class="progress-bar bg-success"
+                    style="width: {min($product.sales * 5, 100)}%;"
+                  >
+                    {$product.sales}件
+                  </div>
+                </div>
+              </td>
+              <td>{$product.stock}</td>
+            </tr>
+            {/foreach}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0">快速操作</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="d-grid gap-2">
+            <a href="/admin/add_product" class="btn btn-primary btn-lg mb-3">
+              <i class="bi bi-plus-circle"></i> 添加新商品
+            </a>
+            <a href="/admin/order_list?status=1" class="btn btn-warning btn-lg">
+              <i class="bi bi-truck"></i> 处理待发货订单
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="d-grid gap-2">
+            <a href="/admin/product_list" class="btn btn-info btn-lg mb-3">
+              <i class="bi bi-list"></i> 管理商品
+            </a>
+            <a href="/admin/user_list" class="btn btn-success btn-lg">
+              <i class="bi bi-people"></i> 管理用户
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 添加自定义样式 -->
+<style>
+  .order-chart {
+    padding: 10px 0;
+  }
+  .order-bar {
+    transition: all 0.3s ease;
+  }
+  .order-bar:hover .progress {
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+  }
+  .progress {
+    transition: all 0.3s ease;
+  }
+  .progress-bar {
+    transition: width 1s ease-in-out;
+  }
+</style>
+{/block}

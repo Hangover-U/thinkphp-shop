@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{block name="title"}电子产品与摩托车商城{/block}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+        --secondary-gradient: linear-gradient(135deg, #a777e3, #8569d9);
+        --accent-gradient: linear-gradient(135deg, #43cbff, #9708cc);
+        --button-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+        --background-color: #e6e9f0;
+        --card-bg: #e6e9f0;
+        --text-primary: #333333;
+        --text-secondary: #666666;
+        --text-muted: #888888;
+        --shadow-color-light: rgba(255, 255, 255, 0.7);
+        --shadow-color-dark: rgba(174, 174, 192, 0.4);
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding-top: 76px; /* 为固定导航栏添加顶部内边距 */
+      }
+
+      .content {
+        flex: 1;
+      }
+
+      /* 新拟态导航栏 */
+      .navbar {
+        margin-bottom: 30px;
+        background: var(--primary-gradient);
+        box-shadow: 0 5px 15px var(--shadow-color-dark);
+        border-radius: 0 0 20px 20px;
+        z-index: 1030; /* 确保导航栏在最上层 */
+        transition: box-shadow 0.3s ease;
+      }
+
+      /* 滚动时导航栏增强阴影效果 */
+      .navbar.scrolled {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .nav-link {
+        font-weight: 500;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        background: white;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover:after {
+        width: 70%;
+      }
+
+      /* 新拟态搜索框 */
+      .form-control {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50px;
+        padding: 10px 20px;
+        color: white;
+        box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.1),
+          inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .form-control:focus {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.2),
+          inset -4px -4px 8px rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+
+      /* 新拟态按钮 */
+      .neomorphic-btn,
+      .btn-outline-light {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: white;
+        background: var(--button-gradient);
+        box-shadow: 5px 5px 10px var(--shadow-color-dark),
+          -5px -5px 10px rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        outline: none;
+        text-decoration: none !important; /* 取消下划线 */
+      }
+
+      .neomorphic-btn::before,
+      .btn-outline-light::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #a777e3, #6e8efb);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 50px;
+      }
+
+      .btn-outline-light:hover::before {
+        opacity: 1;
+      }
+
+      /* 确保按钮在各种状态下保持圆角 */
+      .neomorphic-btn:focus,
+      .btn-outline-light:focus,
+      .neomorphic-btn:active,
+      .btn-outline-light:active,
+      .neomorphic-btn.active,
+      .btn-outline-light.active {
+        border-radius: 50px !important;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      .neomorphic-btn:focus-visible,
+      .neomorphic-btn:focus,
+      .neomorphic-btn:active,
+      .neomorphic-btn.active {
+        outline: none !important;
+        border-radius: 50px !important;
+        box-shadow: 5px 5px 10px var(--shadow-color-dark),
+          -5px -5px 10px rgba(255, 255, 255, 0.1) !important;
+      }
+
+      /* 修复按钮在点击状态下的外观 */
+      .neomorphic-btn:active::after,
+      .btn-outline-light:active::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: -1;
+      }
+
+      /* 搜索按钮特殊样式 */
+      .btn-outline-light {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .btn-outline-light:hover {
+        background: var(--button-gradient);
+        border-color: transparent;
+      }
+
+      /* 按钮悬停效果增强 */
+      .neomorphic-btn:hover {
+        transform: scale(1.05);
+        color: #ffffff !important;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+          0 0 20px rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 15px rgba(110, 142, 251, 0.6),
+          0 0 30px rgba(110, 142, 251, 0.4),
+          5px 5px 10px var(--shadow-color-dark),
+          -5px -5px 10px rgba(255, 255, 255, 0.1);
+        text-decoration: none !important;
+        letter-spacing: 0.5px;
+      }
+
+      /* 按钮点击效果 */
+      .neomorphic-btn:active {
+        transform: scale(0.98);
+        box-shadow: 0 0 8px rgba(110, 142, 251, 0.8),
+          inset 2px 2px 5px rgba(0, 0, 0, 0.2),
+          inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+      }
+
+      /* 确保所有链接按钮没有下划线 */
+      a.neomorphic-btn,
+      a.neomorphic-btn:hover,
+      a.neomorphic-btn:focus,
+      a.neomorphic-btn:active {
+        text-decoration: none !important;
+      }
+
+      /* 下拉菜单样式 */
+      .dropdown-menu {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+        border: none;
+        overflow: hidden;
+        padding: 10px;
+      }
+
+      .dropdown-item {
+        border-radius: 10px;
+        transition: all 0.2s;
+        padding: 10px 15px;
+      }
+
+      .dropdown-item:hover {
+        background: var(--primary-gradient);
+        color: white;
+        transform: translateX(5px);
+      }
+
+      /* 新拟态卡片样式 */
+      .product-item {
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: none;
+      }
+
+      .product-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 12px 12px 20px var(--shadow-color-dark),
+          -12px -12px 20px var(--shadow-color-light);
+      }
+
+      /* 商品图片容器 */
+      .product-img-container {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      /* 商品图片 */
+      .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .product-item:hover .product-img {
+        transform: scale(1.1);
+      }
+
+      /* 商品标题样式 - 渐变效果 */
+      .product-title {
+        height: 48px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-bottom: 8px;
+        font-size: 1rem;
+        font-weight: 700;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: #6e8efb;
+      }
+
+      /* 商品价格渐变风格 */
+      .price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: var(--secondary-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: #966edc;
+        margin-bottom: 1.5rem;
+        display: block;
+      }
+
+      /* 页脚 */
+      .footer {
+        margin-top: 50px;
+        padding: 25px 0;
+        background: var(--primary-gradient);
+        text-align: center;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -5px 15px var(--shadow-color-dark);
+      }
+
+      .footer p:first-child {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .footer p:last-child {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      /* 渐变边框效果 */
+      .gradient-border {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .gradient-border::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 20px;
+        padding: 3px;
+        background: var(--accent-gradient);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .product-item:hover .gradient-border::before {
+        opacity: 1;
+      }
+
+      /* 调试信息 */
+      /*.debug-info {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        border: 1px solid #dee2e6;
+      }
+
+      .debug-info pre {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background-color: #e9ecef;
+        border-radius: 0.25rem;
+        overflow-x: auto;
+      }*/
+
+      /* 电子产品和摩托车不同卡片样式 */
+      .product-item[data-category="electronics"] {
+        position: relative;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+      }
+
+      .product-item[data-category="electronics"]::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 5px;
+        background: linear-gradient(to bottom, #6e8efb, #43cbff);
+        border-radius: 20px 0 0 20px;
+      }
+
+      .product-item[data-category="motorcycle"] {
+        position: relative;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+      }
+
+      .product-item[data-category="motorcycle"]::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 5px;
+        background: linear-gradient(to bottom, #a777e3, #9708cc);
+        border-radius: 20px 0 0 20px;
+      }
+
+      /* 不同类别商品图片显示样式 */
+      .product-item[data-category="electronics"] .product-img {
+        object-fit: contain;
+        padding: 15px;
+      }
+
+      .product-item[data-category="motorcycle"] .product-img {
+        object-fit: cover;
+      }
+
+      /* 标签样式 */
+      .badge {
+        font-weight: normal;
+        padding: 0.4em 0.8em;
+        font-size: 0.75rem;
+        border-radius: 50px;
+        background: var(--primary-gradient);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+      }
+
+      /* 产品角标样式 */
+      .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        transform: rotate(5deg);
+        font-weight: bold;
+        padding: 0.5em 0.8em;
+      }
+
+      .badge.bg-danger {
+        background: linear-gradient(135deg, #ff6b6b, #dc3545) !important;
+        box-shadow: 0 3px 6px rgba(220, 53, 69, 0.4);
+      }
+
+      .badge.bg-success {
+        background: linear-gradient(135deg, #52b788, #28a745) !important;
+        box-shadow: 0 3px 6px rgba(40, 167, 69, 0.4);
+      }
+
+      .badge.bg-warning {
+        background: linear-gradient(135deg, #ffd166, #ffc107) !important;
+        box-shadow: 0 3px 6px rgba(255, 193, 7, 0.4);
+      }
+
+      /* 商品详情页图片样式 */
+      .product-detail-img-container {
+        overflow: hidden;
+        margin-bottom: 20px;
+        border-radius: 20px;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+      }
+
+      .product-detail-img-wrapper {
+        height: 450px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: crosshair;
+        transition: all 0.3s ease;
+      }
+
+      .product-detail-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      /* 不同类别商品详情图片处理方式 */
+      .product-detail-img-wrapper[data-category="electronics"]
+        .product-detail-img {
+        object-fit: contain;
+        padding: 20px;
+      }
+
+      .product-detail-img-wrapper[data-category="motorcycle"]
+        .product-detail-img {
+        object-fit: cover;
+      }
+
+      /* 放大镜效果 */
+      .img-magnifier-glass {
+        position: absolute;
+        border-radius: 50%;
+        cursor: none;
+        width: 180px;
+        height: 180px;
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3), 0 0 1px 1px rgba(0, 0, 0, 0.1);
+        display: none;
+        pointer-events: none;
+        background-repeat: no-repeat;
+        z-index: 5;
+        animation: magnifierShow 0.2s ease;
+      }
+
+      @keyframes magnifierShow {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* 添加放大镜光晕效果 */
+      .img-magnifier-glass::after {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 20px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        filter: blur(3px);
+      }
+
+      /* 添加放大镜十字线 */
+      .img-magnifier-glass::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 30px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.5);
+        transform: translate(-50%, -50%);
+      }
+
+      .img-magnifier-cross-v {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1px;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.5);
+        transform: translate(-50%, -50%);
+      }
+
+      /* 购物车表格样式 */
+      .cart-table {
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+        overflow: hidden;
+      }
+
+      .cart-table th,
+      .cart-table td {
+        vertical-align: middle;
+        border-color: rgba(0, 0, 0, 0.05);
+        padding: 15px;
+      }
+
+      .cart-table thead th {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+      }
+
+      /* 订单详情样式 */
+      .order-status {
+        font-size: 1.2rem;
+        font-weight: bold;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: #966edc;
+      }
+
+      .order-product-img {
+        max-height: 80px;
+        max-width: 80px;
+        border-radius: 10px;
+        box-shadow: 3px 3px 6px var(--shadow-color-dark),
+          -3px -3px 6px var(--shadow-color-light);
+      }
+
+      /* 多级下拉菜单样式 */
+      .dropdown-submenu {
+        position: relative;
+      }
+
+      .dropdown-submenu .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+      }
+
+      /* 电子产品和摩托车不同卡片样式 */
+      .product-item[data-category="electronics"] {
+        position: relative;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+      }
+
+      .product-item[data-category="electronics"]::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 5px;
+        background: linear-gradient(to bottom, #6e8efb, #43cbff);
+        border-radius: 20px 0 0 20px;
+      }
+
+      .product-item[data-category="motorcycle"] {
+        position: relative;
+        box-shadow: 8px 8px 15px var(--shadow-color-dark),
+          -8px -8px 15px var(--shadow-color-light);
+      }
+
+      .product-item[data-category="motorcycle"]::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 5px;
+        background: linear-gradient(to bottom, #a777e3, #9708cc);
+        border-radius: 20px 0 0 20px;
+      }
+
+      /* 不同类别商品图片显示样式 */
+      .product-item[data-category="electronics"] .product-img {
+        object-fit: contain;
+        padding: 15px;
+      }
+
+      .product-item[data-category="motorcycle"] .product-img {
+        object-fit: cover;
+      }
+    </style>
+    {block name="css"}{/block}
+  </head>
+  <body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="/">电子产品与摩托车商城</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">首页</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="electronicsDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                电子产品
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=3"
+                    >手机</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=4"
+                    >笔记本电脑</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=5"
+                    >智能手表</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=6"
+                    >耳机</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="motorcycleDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                摩托车
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=7"
+                    >街车</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=8"
+                    >跑车</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=9"
+                    >越野车</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/products?category_id=10"
+                    >巡航车</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/products">全部商品</a>
+            </li>
+          </ul>
+          <!-- 搜索框 -->
+          <form class="d-flex me-3" action="/search" method="get">
+            <input
+              class="form-control me-2"
+              type="search"
+              name="keyword"
+              placeholder="搜索商品"
+            />
+            <button class="btn btn-outline-light" type="submit">搜索</button>
+          </form>
+          <!-- 用户菜单 -->
+          <ul class="navbar-nav">
+            {if $isLogin}
+            <li class="nav-item">
+              <a class="nav-link" href="/cart">购物车</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="userDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                {$user.username}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="/user/center">个人中心</a>
+                </li>
+                <li><a class="dropdown-item" href="/order">我的订单</a></li>
+                {if $isAdmin}
+                <li><a class="dropdown-item" href="/admin">管理员控制台</a></li>
+                {/if}
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="/user/logout">退出登录</a>
+                </li>
+              </ul>
+            </li>
+            {else}
+            <li class="nav-item">
+              <a class="nav-link" href="/user/login">登录</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/register">注册</a>
+            </li>
+            {/if}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="container content">{block name="content"}{/block}</div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="container">
+        <p class="mb-1">© 2025电子/摩托商城</p>
+        <p class="mb-0">软件工程--吾布力</p>
+      </div>
+    </footer>
+
+    <!-- 调试信息 -->
+    <!-- 
+    <div class="container">
+      <div class="debug-info">
+        <h4>调试信息（仅开发环境可见）</h4>
+        <p><strong>是否登录：</strong>{$isLogin ? '是' : '否'}</p>
+        <p><strong>Cookie用户ID：</strong>{$debug_cookie_user_id ?? '无'}</p>
+        <p><strong>Cookie登录状态：</strong>{$debug_cookie_is_login ?? '无'}</p>
+        <p>
+          <strong>Cookie用户信息：</strong>{$debug_cookie_user_info ?? '无'}
+        </p>
+        <p><strong>用户信息：</strong></p>
+        <pre>{:var_export($user, true)}</pre>
+      </div>
+    </div>
+    -->
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    {block name="js"}{/block}
+
+    <!-- 多级下拉菜单支持 -->
+    <script>
+      $(document).ready(function () {
+        // 多级下拉菜单支持
+        $(".dropdown-menu a.dropdown-toggle").on("click", function (e) {
+          if (!$(this).next().hasClass("show")) {
+            $(this)
+              .parents(".dropdown-menu")
+              .first()
+              .find(".show")
+              .removeClass("show");
+          }
+          var $subMenu = $(this).next(".dropdown-menu");
+          $subMenu.toggleClass("show");
+
+          $(this)
+            .parents("li.nav-item.dropdown.show")
+            .on("hidden.bs.dropdown", function (e) {
+              $(".dropdown-submenu .show").removeClass("show");
+            });
+
+          return false;
+        });
+
+        // 滚动时导航栏样式变化
+        $(window).scroll(function () {
+          if ($(this).scrollTop() > 50) {
+            $(".navbar").addClass("scrolled");
+          } else {
+            $(".navbar").removeClass("scrolled");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

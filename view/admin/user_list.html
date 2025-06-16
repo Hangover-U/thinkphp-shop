@@ -1,0 +1,105 @@
+{extend name="layout/admin" /} {block name="title"}用户管理 -
+管理员控制台{/block} {block name="content"}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>用户管理</h1>
+    <a href="/admin/add_user" class="btn btn-primary">
+      <i class="bi bi-person-plus"></i> 添加用户
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>用户名</th>
+              <th>手机号码</th>
+              <th>邮箱</th>
+              <th>真实姓名</th>
+              <th>角色</th>
+              <th>状态</th>
+              <th>注册时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="users" id="user"}
+            <tr>
+              <td>{$user.id}</td>
+              <td>{$user.username}</td>
+              <td>{$user.mobile}</td>
+              <td>{$user.email}</td>
+              <td>{$user.real_name}</td>
+              <td>
+                {if $user.is_admin == 1}
+                <span class="badge bg-danger">管理员</span>
+                {else}
+                <span class="badge bg-secondary">普通用户</span>
+                {/if}
+              </td>
+              <td>
+                {if $user.status == 1}
+                <span class="badge bg-success">启用</span>
+                {else}
+                <span class="badge bg-danger">禁用</span>
+                {/if}
+              </td>
+              <td>{$user.create_time}</td>
+              <td>
+                <a
+                  href="/admin/edit_user/{$user.id}"
+                  class="btn btn-sm btn-info"
+                  >编辑</a
+                >
+                <button
+                  class="btn btn-sm btn-danger delete-user"
+                  data-id="{$user.id}"
+                  data-username="{$user.username}"
+                >
+                  删除
+                </button>
+              </td>
+            </tr>
+            {/volist}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-3">{$users|raw}</div>
+    </div>
+  </div>
+</div>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 删除用户
+    $(".delete-user").click(function () {
+      var id = $(this).data("id");
+      var username = $(this).data("username");
+
+      if (confirm("确定要删除用户 " + username + " 吗？")) {
+        $.ajax({
+          url: "/admin/delete_user",
+          type: "POST",
+          data: { id: id },
+          dataType: "json",
+          success: function (res) {
+            if (res.code === 1) {
+              alert(res.msg);
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          },
+          error: function () {
+            alert("服务器错误，请稍后再试");
+          },
+        });
+      }
+    });
+  });
+</script>
+{/block}

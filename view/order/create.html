@@ -1,0 +1,441 @@
+{extend name="layout/base" /} {block name="title"}创建订单 -
+在线购物系统{/block} {block name="content"}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb neomorphic-breadcrumb">
+      <li class="breadcrumb-item"><a href="/">首页</a></li>
+      <li class="breadcrumb-item"><a href="/cart">购物车</a></li>
+      <li class="breadcrumb-item active" aria-current="page">创建订单</li>
+    </ol>
+  </nav>
+
+  <h1 class="gradient-heading mb-4">创建订单</h1>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="neomorphic-card mb-4">
+        <div class="card-header gradient-header">
+          <h5 class="m-0">确认商品信息</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="cart-table w-100">
+              <thead class="cart-header">
+                <tr>
+                  <th>商品</th>
+                  <th>单价</th>
+                  <th>数量</th>
+                  <th>小计</th>
+                </tr>
+              </thead>
+              <tbody>
+                {volist name="cartItems" id="item"}
+                <tr class="neomorphic-item">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="cart-img-container me-3">
+                        <img
+                          src="{$item.product.image}"
+                          alt="{$item.product.name}"
+                          class="cart-product-img"
+                        />
+                      </div>
+                      <div>
+                        <h5 class="product-title">{$item.product.name}</h5>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="price">￥{$item.product.price}</span></td>
+                  <td>{$item.quantity}</td>
+                  <td>
+                    <span class="subtotal"
+                      >￥{$item.product.price * $item.quantity}</span
+                    >
+                  </td>
+                </tr>
+                {/volist}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="neomorphic-card">
+        <div class="card-header gradient-header">
+          <h5 class="m-0">收货信息</h5>
+        </div>
+        <div class="card-body">
+          <form id="orderForm">
+            <div class="mb-3">
+              <label for="consignee" class="form-label">收货人</label>
+              <div class="neomorphic-input-container">
+                <input
+                  type="text"
+                  class="neomorphic-input"
+                  id="consignee"
+                  name="consignee"
+                  value="{$user.real_name}"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="mobile" class="form-label">联系电话</label>
+              <div class="neomorphic-input-container">
+                <input
+                  type="tel"
+                  class="neomorphic-input"
+                  id="mobile"
+                  name="mobile"
+                  value="{$user.mobile}"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="address" class="form-label">收货地址</label>
+              <div class="neomorphic-input-container">
+                <textarea
+                  class="neomorphic-input"
+                  id="address"
+                  name="address"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="neomorphic-card">
+        <div class="card-header gradient-header">
+          <h5 class="m-0">订单金额</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span>商品金额：</span>
+            <span class="gradient-text">￥{$totalAmount}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>运费：</span>
+            <span class="gradient-text">￥0.00</span>
+          </div>
+          <hr class="neomorphic-divider" />
+          <div class="d-flex justify-content-between mb-3">
+            <span class="fs-5">实付金额：</span>
+            <span class="gradient-total-price">￥{$totalAmount}</span>
+          </div>
+          <div class="d-grid">
+            <button
+              type="button"
+              class="neomorphic-btn checkout-btn w-100"
+              id="submitOrder"
+            >
+              <i class="checkout-icon">💳</i> 提交订单
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    color: #6e8efb;
+    background-clip: text;
+  }
+
+  /* 渐变文字 */
+  .gradient-text {
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    color: #6e8efb;
+    background-clip: text;
+  }
+
+  /* 面包屑 */
+  .neomorphic-breadcrumb {
+    border-radius: 15px;
+    padding: 15px;
+    background: var(--card-bg);
+    box-shadow: 3px 3px 6px var(--shadow-color-dark),
+      -3px -3px 6px var(--shadow-color-light);
+    margin-bottom: 20px;
+  }
+
+  .breadcrumb-item a {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 5;
+  }
+
+  .breadcrumb-item a:hover {
+    color: #6e8efb;
+    text-decoration: none;
+  }
+
+  /* 新拟态卡片 */
+  .neomorphic-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 8px 8px 15px var(--shadow-color-dark),
+      -8px -8px 15px var(--shadow-color-light);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: none;
+  }
+
+  .neomorphic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 12px 12px 20px var(--shadow-color-dark),
+      -12px -12px 20px var(--shadow-color-light);
+  }
+
+  /* 卡片头部 */
+  .gradient-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 15px 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border: none;
+  }
+
+  /* 商品表格 */
+  .cart-table {
+    color: var(--text-primary);
+    border-collapse: separate;
+    border-spacing: 0 15px;
+    margin-bottom: 0;
+  }
+
+  .cart-header {
+    background: var(--primary-gradient);
+    border-radius: 15px;
+  }
+
+  .cart-header th {
+    border: none !important;
+    padding: 15px;
+    color: white !important;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .cart-header th:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+
+  .cart-header th:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  .neomorphic-item {
+    background: var(--card-bg);
+    margin-bottom: 15px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px var(--shadow-color-light);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .neomorphic-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 8px 8px 15px var(--shadow-color-dark),
+      -8px -8px 15px var(--shadow-color-light);
+  }
+
+  .neomorphic-item td {
+    border: none !important;
+    padding: 15px;
+    vertical-align: middle;
+  }
+
+  .neomorphic-item td:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+
+  .neomorphic-item td:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  /* 商品图片容器 */
+  .cart-img-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 4px 4px 8px var(--shadow-color-dark),
+      -4px -4px 8px var(--shadow-color-light);
+    transition: all 0.3s ease;
+  }
+
+  .cart-img-container:hover {
+    transform: scale(1.05);
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px var(--shadow-color-light);
+  }
+
+  .cart-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+  }
+
+  /* 商品标题和价格 */
+  .product-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #6e8efb;
+  }
+
+  .price {
+    font-weight: 600;
+    color: #966edc;
+  }
+
+  .subtotal {
+    font-weight: 700;
+    color: #966edc;
+  }
+
+  /* 新拟态输入框 */
+  .neomorphic-input-container {
+    position: relative;
+    border-radius: 15px;
+    box-shadow: inset 3px 3px 6px var(--shadow-color-dark),
+      inset -3px -3px 6px var(--shadow-color-light);
+    overflow: hidden;
+  }
+
+  .neomorphic-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  .neomorphic-input:focus {
+    color: #6e8efb;
+  }
+
+  /* 分隔线 */
+  .neomorphic-divider {
+    height: 2px;
+    background: var(--shadow-color-dark);
+    border: none;
+    margin: 15px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .neomorphic-divider::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--shadow-color-light);
+  }
+
+  /* 总价格 */
+  .gradient-total-price {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #966edc;
+  }
+
+  /* 提交按钮 */
+  .checkout-btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #52b788, #28a745);
+    box-shadow: 5px 5px 10px var(--shadow-color-dark),
+      -5px -5px 10px var(--shadow-color-light);
+    transition: all 0.3s ease;
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 50px;
+  }
+
+  .checkout-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.4);
+  }
+
+  .checkout-icon {
+    margin-right: 8px;
+    font-size: 1.2rem;
+  }
+</style>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 提交订单
+    $("#submitOrder").click(function () {
+      var formData = $("#orderForm").serialize();
+
+      // 验证表单
+      if (!$("#consignee").val()) {
+        alert("请输入收货人姓名");
+        return;
+      }
+
+      if (!$("#mobile").val()) {
+        alert("请输入联系电话");
+        return;
+      }
+
+      if (!$("#address").val()) {
+        alert("请输入收货地址");
+        return;
+      }
+
+      $.ajax({
+        url: "/order/submit",
+        type: "POST",
+        data: formData,
+        dataType: "json",
+        success: function (res) {
+          if (res.code === 1) {
+            alert(res.msg);
+            window.location.href = "/order";
+          } else {
+            alert(res.msg);
+          }
+        },
+        error: function () {
+          alert("服务器错误，请稍后再试");
+        },
+      });
+    });
+  });
+</script>
+{/block}

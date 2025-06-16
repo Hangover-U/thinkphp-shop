@@ -1,0 +1,417 @@
+{extend name="layout/base" /} {block name="title"}个人中心 -
+在线购物系统{/block} {block name="content"}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb p-3 neomorphic-card mb-4">
+      <li class="breadcrumb-item">
+        <a href="/" class="text-decoration-none">首页</a>
+      </li>
+      <li class="breadcrumb-item active gradient-text" aria-current="page">
+        个人中心
+      </li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-md-3 mb-4">
+      <div class="neomorphic-card">
+        <div class="card-header p-3">
+          <h5 class="mb-0 gradient-heading">个人中心</h5>
+          <div class="header-line"></div>
+        </div>
+        <div class="menu-list p-3" id="myTab" role="tablist">
+          <a
+            href="#profile"
+            class="menu-item active"
+            id="profile-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#profile"
+            role="tab"
+            aria-controls="profile"
+            aria-selected="true"
+            >个人资料</a
+          >
+          <a
+            href="#password"
+            class="menu-item"
+            id="password-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#password"
+            role="tab"
+            aria-controls="password"
+            aria-selected="false"
+            >修改密码</a
+          >
+          <a href="/order" class="menu-item">我的订单</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <div class="tab-content" id="myTabContent">
+        <!-- 个人资料 -->
+        <div
+          class="tab-pane fade show active"
+          id="profile"
+          role="tabpanel"
+          aria-labelledby="profile-tab"
+        >
+          <div class="neomorphic-card">
+            <div class="card-header p-3">
+              <h5 class="mb-0 gradient-heading">个人资料</h5>
+              <div class="header-line"></div>
+            </div>
+            <div class="card-body p-4">
+              <form id="profileForm" method="post">
+                <div class="mb-4">
+                  <label for="username" class="form-label">用户名</label>
+                  <div class="input-wrapper">
+                    <input
+                      type="text"
+                      class="form-control neomorphic-input"
+                      id="username"
+                      value="{$user.username}"
+                      disabled
+                      readonly
+                    />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label for="mobile" class="form-label">手机号码</label>
+                  <div class="input-wrapper">
+                    <input
+                      type="tel"
+                      class="form-control neomorphic-input"
+                      id="mobile"
+                      name="mobile"
+                      value="{$user.mobile}"
+                    />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label for="email" class="form-label">邮箱</label>
+                  <div class="input-wrapper">
+                    <input
+                      type="email"
+                      class="form-control neomorphic-input"
+                      id="email"
+                      name="email"
+                      value="{$user.email}"
+                    />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label for="real_name" class="form-label">真实姓名</label>
+                  <div class="input-wrapper">
+                    <input
+                      type="text"
+                      class="form-control neomorphic-input"
+                      id="real_name"
+                      name="real_name"
+                      value="{$user.real_name}"
+                    />
+                  </div>
+                </div>
+                <button type="submit" class="neomorphic-btn">保存修改</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- 修改密码 -->
+        <div
+          class="tab-pane fade"
+          id="password"
+          role="tabpanel"
+          aria-labelledby="password-tab"
+        >
+          <div class="neomorphic-card">
+            <div class="card-header p-3">
+              <h5 class="mb-0 gradient-heading">修改密码</h5>
+              <div class="header-line"></div>
+            </div>
+            <div class="card-body p-4">
+              <form id="passwordForm">
+                <div class="mb-4">
+                  <label for="old_password" class="form-label">旧密码</label>
+                  <div class="input-wrapper">
+                    <input
+                      type="password"
+                      class="form-control neomorphic-input"
+                      id="old_password"
+                      name="old_password"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label for="new_password" class="form-label">新密码</label>
+                  <div class="input-wrapper">
+                    <input
+                      type="password"
+                      class="form-control neomorphic-input"
+                      id="new_password"
+                      name="new_password"
+                      required
+                    />
+                  </div>
+                  <div class="form-text">密码长度为6-20个字符</div>
+                </div>
+                <div class="mb-4">
+                  <label for="confirm_password" class="form-label"
+                    >确认新密码</label
+                  >
+                  <div class="input-wrapper">
+                    <input
+                      type="password"
+                      class="form-control neomorphic-input"
+                      id="confirm_password"
+                      name="confirm_password"
+                      required
+                    />
+                  </div>
+                </div>
+                <button type="submit" class="neomorphic-btn">修改密码</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 渐变文字 */
+  .gradient-text {
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 面包屑 */
+  .breadcrumb {
+    border-radius: 15px;
+    padding: 15px;
+  }
+
+  .breadcrumb-item a {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 5;
+  }
+
+  .breadcrumb-item a:hover {
+    color: #6e8efb;
+    text-decoration: none;
+  }
+
+  /* 卡片头部线条 */
+  .header-line {
+    height: 3px;
+    background: var(--accent-gradient);
+    margin-top: 10px;
+    border-radius: 3px;
+  }
+
+  /* 菜单列表 */
+  .menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .menu-item {
+    display: block;
+    padding: 12px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--card-bg);
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 6px var(--shadow-color-dark),
+      -3px -3px 6px var(--shadow-color-light);
+    position: relative;
+    z-index: 15;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .menu-item:hover {
+    transform: translateX(5px);
+    color: #6e8efb;
+  }
+
+  .menu-item.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.1),
+      inset -3px -3px 5px rgba(255, 255, 255, 0.05);
+  }
+
+  /* 表单控件 */
+  .input-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .neomorphic-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+      inset -3px -3px 5px var(--shadow-color-light);
+    transition: all 0.3s ease;
+  }
+
+  .neomorphic-input:focus {
+    outline: none;
+    box-shadow: inset 4px 4px 8px var(--shadow-color-dark),
+      inset -4px -4px 8px var(--shadow-color-light);
+  }
+
+  .neomorphic-input:disabled,
+  .neomorphic-input[readonly] {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-muted);
+  }
+
+  /* 表单文本说明 */
+  .form-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+    margin-left: 5px;
+  }
+
+  /* 表单标签 */
+  .form-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  /* 确保标签页正常工作 */
+  .tab-content {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+  }
+
+  .tab-pane {
+    display: none;
+  }
+
+  .tab-pane.active {
+    display: block;
+  }
+
+  .tab-pane.show {
+    opacity: 1;
+  }
+</style>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 修改个人资料
+    $("#profileForm").submit(function (e) {
+      e.preventDefault();
+
+      // 获取表单数据
+      var formData = {
+        email: $("#email").val(),
+        mobile: $("#mobile").val(),
+        real_name: $("#real_name").val(),
+      };
+
+      // 使用纯JavaScript的XHR对象发送请求，避免jQuery可能的DOM操作问题
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/user/update_info", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.code === 1) {
+              alert(response.msg);
+              location.reload();
+            } else {
+              alert(response.msg || "更新失败，请稍后再试");
+            }
+          } else {
+            alert("服务器错误（" + xhr.status + "），请稍后再试");
+            console.log("错误状态码：" + xhr.status);
+            console.log("错误信息：" + xhr.responseText);
+          }
+        }
+      };
+
+      // 将数据格式化为URL编码格式
+      var params = Object.keys(formData)
+        .map(function (key) {
+          return (
+            encodeURIComponent(key) + "=" + encodeURIComponent(formData[key])
+          );
+        })
+        .join("&");
+
+      xhr.send(params);
+    });
+
+    // 修改密码
+    $("#passwordForm").submit(function (e) {
+      e.preventDefault();
+
+      // 验证密码是否一致
+      var newPassword = $("#new_password").val();
+      var confirmPassword = $("#confirm_password").val();
+      if (newPassword !== confirmPassword) {
+        alert("两次输入的密码不一致");
+        return;
+      }
+
+      var formData = {
+        old_password: $("#old_password").val(),
+        new_password: newPassword,
+        confirm_password: confirmPassword,
+      };
+
+      $.ajax({
+        url: "/user/update_password",
+        type: "POST",
+        data: formData,
+        dataType: "json",
+        success: function (res) {
+          if (res.code === 1) {
+            alert(res.msg);
+            // 重置表单
+            $("#passwordForm")[0].reset();
+          } else {
+            alert(res.msg || "密码修改失败，请稍后再试");
+          }
+        },
+        error: function () {
+          alert("服务器错误，请稍后再试");
+        },
+      });
+    });
+  });
+</script>
+{/block}

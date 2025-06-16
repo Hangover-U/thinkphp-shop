@@ -1,0 +1,47 @@
+{extend name="layout/base" /} {block name="title"}用户管理 -
+在线购物系统{/block} {block name="content"}
+<h1 class="mb-4">用户管理</h1>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>手机号码</th>
+            <th>邮箱</th>
+            <th>真实姓名</th>
+            <th>角色</th>
+            <th>状态</th>
+            <th>注册时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          {volist name="users" id="user"}
+          <tr>
+            <td>{$user.id}</td>
+            <td>{$user.username}</td>
+            <td>{$user.mobile}</td>
+            <td>{$user.email}</td>
+            <td>{$user.real_name}</td>
+            <td>{$user.is_admin ? '管理员' : '普通用户'}</td>
+            <td>
+              {if $user.status == 1}
+              <span class="badge bg-success">启用</span>
+              {else}
+              <span class="badge bg-danger">禁用</span>
+              {/if}
+            </td>
+            <td>{$user.create_time}</td>
+          </tr>
+          {/volist}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-3">{$users|raw}</div>
+  </div>
+</div>
+{/block}

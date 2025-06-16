@@ -1,0 +1,149 @@
+{extend name="layout/admin" /} {block name="title"}订单详情 -
+管理员控制台{/block} {block name="content"}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>订单详情</h1>
+    <a href="/admin/order_list" class="btn btn-secondary"> 返回订单列表 </a>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">订单信息</h5>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <p><strong>订单号：</strong>{$order.order_no}</p>
+          <p><strong>创建时间：</strong>{$order.create_time}</p>
+          <p><strong>用户ID：</strong>{$order.user_id}</p>
+          <p><strong>订单金额：</strong>￥{$order.total_amount}</p>
+        </div>
+        <div class="col-md-6">
+          <p>
+            <strong>订单状态：</strong>
+            {switch name="order.status"} {case value="0"}<span
+              class="badge bg-warning"
+              >待付款</span
+            >{/case} {case value="1"}<span class="badge bg-info">待发货</span
+            >{/case} {case value="2"}<span class="badge bg-primary">已发货</span
+            >{/case} {case value="3"}<span class="badge bg-success">已完成</span
+            >{/case} {case value="4"}<span class="badge bg-danger">已取消</span
+            >{/case} {/switch}
+          </p>
+          <p>
+            <strong>支付时间：</strong>{$order.pay_time ? $order.pay_time :
+            '未支付'}
+          </p>
+          <p>
+            <strong>发货时间：</strong>{$order.delivery_time ?
+            $order.delivery_time : '未发货'}
+          </p>
+          <p>
+            <strong>完成时间：</strong>{$order.complete_time ?
+            $order.complete_time : '未完成'}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">收货信息</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>收货人：</strong>{$order.consignee}</p>
+          <p><strong>联系电话：</strong>{$order.mobile}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>收货地址：</strong>{$order.address}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">商品信息</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>商品图片</th>
+              <th>商品名称</th>
+              <th>单价</th>
+              <th>数量</th>
+              <th>小计</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="order.order_details" id="detail"}
+            <tr>
+              <td>
+                <img
+                  src="{$detail.product_image}"
+                  alt="{$detail.product_name}"
+                  style="width: 60px; height: 60px; object-fit: cover"
+                />
+              </td>
+              <td>{$detail.product_name}</td>
+              <td>￥{$detail.product_price}</td>
+              <td>{$detail.quantity}</td>
+              <td>￥{$detail.total_price}</td>
+            </tr>
+            {/volist}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="text-end">
+                <strong>订单总金额：</strong>
+              </td>
+              <td><strong>￥{$order.total_amount}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {if $order.status == 1}
+  <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+    <button class="btn btn-success btn-lg ship-order" data-id="{$order.id}">
+      确认发货
+    </button>
+  </div>
+  {/if}
+</div>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 发货处理
+    $(".ship-order").click(function () {
+      var orderId = $(this).data("id");
+      if (confirm("确定要将此订单标记为已发货吗？")) {
+        $.ajax({
+          url: "/admin/ship",
+          type: "POST",
+          data: { order_id: orderId },
+          dataType: "json",
+          success: function (res) {
+            if (res.code === 1) {
+              alert(res.msg);
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          },
+          error: function () {
+            alert("服务器错误，请稍后再试");
+          },
+        });
+      }
+    });
+  });
+</script>
+{/block}

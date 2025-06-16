@@ -1,0 +1,113 @@
+{extend name="layout/base" /} {block name="title"}搜索结果：{$keyword} -
+在线购物系统{/block} {block name="content"}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb p-3 neomorphic-card mb-4">
+      <li class="breadcrumb-item">
+        <a href="/" class="text-decoration-none">首页</a>
+      </li>
+      <li class="breadcrumb-item active gradient-text" aria-current="page">
+        搜索：{$keyword}
+      </li>
+    </ol>
+  </nav>
+
+  <h2 class="mb-4 gradient-heading">搜索结果：{$keyword}</h2>
+
+  {if $products->isEmpty()}
+  <div class="neomorphic-card p-4 text-center">
+    <div class="empty-state">
+      <i class="empty-icon">🔍</i>
+      <h4 class="mt-3 mb-3 gradient-heading">未找到相关商品</h4>
+      <p class="text-muted">抱歉，没有找到与"{$keyword}"相关的商品</p>
+      <a href="/products" class="neomorphic-btn mt-3">查看全部商品</a>
+    </div>
+  </div>
+  {else}
+  <div class="row">
+    {foreach $products as $product}
+    <div class="col-md-3 mb-4">
+      <div
+        class="product-item h-100 position-relative gradient-border"
+        data-category="{$product.category_id < 7 ? 'electronics' : 'motorcycle'}"
+      >
+        <div class="product-img-container">
+          <img
+            src="{$product.image}"
+            class="product-img"
+            alt="{$product.name}"
+          />
+        </div>
+        <div class="product-info p-3">
+          <h5 class="product-title">{$product.name}</h5>
+          <p class="price">￥{$product.price}</p>
+          <div class="text-center mt-3">
+            <a href="/product/{$product.id}" class="neomorphic-btn">查看详情</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {/foreach}
+  </div>
+
+  <div class="mt-4 d-flex justify-content-center">{$products|raw}</div>
+  {/if}
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 渐变文字 */
+  .gradient-text {
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 面包屑 */
+  .breadcrumb {
+    border-radius: 15px;
+    padding: 15px;
+  }
+
+  .breadcrumb-item a {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 5;
+  }
+
+  .breadcrumb-item a:hover {
+    color: #6e8efb;
+    text-decoration: none;
+  }
+
+  /* 空状态 */
+  .empty-state {
+    padding: 30px 0;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  /* 确保按钮和链接可点击 */
+  .neomorphic-btn,
+  a.neomorphic-btn {
+    position: relative;
+    z-index: 5;
+    cursor: pointer;
+  }
+</style>
+{/block}

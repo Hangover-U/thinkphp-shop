@@ -1,0 +1,527 @@
+{extend name="layout/base" /} {block name="title"}{$product.name} -
+在线购物系统{/block} {block name="content"}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb p-3 neomorphic-card mb-4">
+      <li class="breadcrumb-item">
+        <a href="/" class="text-decoration-none">首页</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="/category/{$product.category_id}" class="text-decoration-none"
+          >{$product.category.name}</a
+        >
+      </li>
+      <li class="breadcrumb-item active gradient-text" aria-current="page">
+        {$product.name}
+      </li>
+    </ol>
+  </nav>
+
+  <div class="row mb-5">
+    <!-- 商品图片 -->
+    <div class="col-md-5">
+      <div class="neomorphic-card product-detail-img-container gradient-border">
+        <div
+          class="product-detail-img-wrapper"
+          data-category="{$product.category_id < 7 ? 'electronics' : 'motorcycle'}"
+        >
+          <img
+            src="{$product.image}"
+            class="product-detail-img"
+            alt="{$product.name}"
+            id="productDetailImage"
+          />
+          {if $product.is_recommend}
+          <span class="product-badge badge bg-danger">推荐</span>
+          {/if}
+          <!-- 图片放大镜效果 -->
+          <div class="img-magnifier-glass" id="magnifierGlass">
+            <div class="img-magnifier-cross-v"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 商品信息 -->
+    <div class="col-md-7">
+      <div class="neomorphic-card p-4 h-100 d-flex flex-column">
+        <h2 class="mb-4 gradient-heading">{$product.name}</h2>
+        <div class="mb-4">
+          <span class="product-price">￥{$product.price}</span>
+        </div>
+
+        <div class="product-info mb-4">
+          <div class="info-item">
+            <span class="info-label">厂商：</span>
+            <span class="info-value">{$product.manufacturer}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">库存：</span>
+            <span class="info-value">{$product.stock}件</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">销量：</span>
+            <span class="info-value">{$product.sales}件</span>
+          </div>
+        </div>
+
+        <form id="addToCartForm" class="mt-auto mb-0">
+          <input type="hidden" name="product_id" value="{$product.id}" />
+          <div class="mb-4">
+            <label for="quantity" class="form-label mb-2">购买数量</label>
+            <div class="quantity-selector">
+              <button type="button" class="quantity-btn" id="decreaseQuantity">
+                <span>-</span>
+              </button>
+              <input
+                type="number"
+                class="form-control quantity-input"
+                id="quantity"
+                name="quantity"
+                value="1"
+                min="1"
+                max="{$product.stock}"
+              />
+              <button type="button" class="quantity-btn" id="increaseQuantity">
+                <span>+</span>
+              </button>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button type="submit" class="neomorphic-btn btn-cart">
+              <i class="cart-icon">🛒</i> 加入购物车
+            </button>
+            <button type="button" class="neomorphic-btn btn-buy" id="buyNow">
+              立即购买
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 商品详情 -->
+  <div class="neomorphic-card mb-5 gradient-border">
+    <div class="card-header p-3">
+      <h4 class="mb-0 gradient-heading">商品详情</h4>
+      <div class="header-line"></div>
+    </div>
+    <div class="card-body p-4">
+      <p class="product-description">{$product.description}</p>
+    </div>
+  </div>
+
+  <!-- 相关商品 -->
+  {if !empty($relatedProducts)}
+  <div class="mb-5">
+    <h3 class="gradient-heading mb-4">相关商品</h3>
+    <div class="row">
+      {foreach $relatedProducts as $relatedProduct}
+      <div class="col-6 col-md-3 mb-4">
+        <div
+          class="product-item h-100 position-relative gradient-border"
+          data-category="{$relatedProduct.category_id < 7 ? 'electronics' : 'motorcycle'}"
+        >
+          <div class="product-img-container">
+            <img
+              src="{$relatedProduct.image}"
+              class="product-img"
+              alt="{$relatedProduct.name}"
+            />
+            {if $relatedProduct.is_recommend}
+            <span class="product-badge badge bg-danger">推荐</span>
+            {/if}
+          </div>
+          <div class="product-info p-3">
+            <h5 class="product-title">{$relatedProduct.name}</h5>
+            <p class="price">￥{$relatedProduct.price}</p>
+            <div class="text-center mt-3">
+              <a href="/product/{$relatedProduct.id}" class="neomorphic-btn"
+                >查看详情</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      {/foreach}
+    </div>
+  </div>
+  {/if}
+</div>
+{/block} {block name="css"}
+<style>
+  /* 渐变标题 */
+  .gradient-heading {
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 渐变文字 */
+  .gradient-text {
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 商品价格 */
+  .product-price {
+    font-size: 2rem;
+    font-weight: 700;
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  }
+
+  /* 首页卡片头部线条 */
+  .header-line {
+    height: 3px;
+    background: var(--accent-gradient);
+    margin-top: 10px;
+    border-radius: 3px;
+  }
+
+  /* 首页面包屑 */
+  .breadcrumb {
+    border-radius: 15px;
+    padding: 15px;
+  }
+
+  .breadcrumb-item a {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .breadcrumb-item a:hover {
+    color: #6e8efb;
+    text-decoration: none;
+  }
+
+  /* 商品信息项 */
+  .info-item {
+    display: flex;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--card-bg);
+    box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+      inset -3px -3px 5px var(--shadow-color-light);
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 60px;
+  }
+
+  .info-value {
+    color: var(--text-primary);
+  }
+
+  /* 数量选择器 */
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    width: 180px;
+    margin-bottom: 10px;
+    border-radius: 50px;
+    background: var(--card-bg);
+    padding: 5px;
+    box-shadow: inset 3px 3px 5px var(--shadow-color-dark),
+      inset -3px -3px 5px var(--shadow-color-light);
+  }
+
+  .quantity-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    box-shadow: 3px 3px 6px var(--shadow-color-dark),
+      -3px -3px 6px var(--shadow-color-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quantity-btn:hover {
+    color: #6e8efb;
+  }
+
+  .quantity-btn:active {
+    box-shadow: inset 2px 2px 4px var(--shadow-color-dark),
+      inset -2px -2px 4px var(--shadow-color-light);
+  }
+
+  .quantity-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 0;
+    margin: 0 10px;
+    box-shadow: none;
+  }
+
+  .quantity-input:focus {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* 操作按钮 */
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+
+  .btn-cart {
+    background: linear-gradient(135deg, #ffa600, #ff7b00);
+    flex: 1;
+  }
+
+  .cart-icon {
+    margin-right: 5px;
+  }
+
+  .btn-buy {
+    background: var(--accent-gradient);
+    flex: 1;
+  }
+
+  /* 商品描述 */
+  .product-description {
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+</style>
+{/block} {block name="js"}
+<script>
+  $(function () {
+    // 获取Cookie函数
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+      return null;
+    }
+
+    // 检查是否登录
+    function checkLogin() {
+      return getCookie("user_id") !== null && getCookie("is_login") !== null;
+    }
+
+    // 商品图片放大镜效果
+    $(function () {
+      const container = $(".product-detail-img-wrapper");
+      const img = $(".product-detail-img");
+      const glass = $("#magnifierGlass");
+
+      // 配置
+      const zoom = 4; // 增加放大倍数
+
+      // 初始化
+      glass.hide();
+
+      // 鼠标进入事件
+      container.on("mouseenter", function () {
+        // 显示放大镜
+        glass.show();
+
+        // 整体图片轻微放大效果
+        img.css({
+          transform: "scale(1.15)",
+          transition: "transform 0.3s ease",
+        });
+      });
+
+      // 移动事件
+      container.on("mousemove", function (e) {
+        // 容器位置和尺寸
+        const rect = container[0].getBoundingClientRect();
+        const cw = container.width();
+        const ch = container.height();
+
+        // 鼠标相对位置
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // 放大镜尺寸和位置（中心在鼠标处）
+        const gw = glass.width();
+        const gh = glass.height();
+
+        // 放大镜位置（确保不超出容器）
+        let glassLeft = Math.min(Math.max(0, x - gw / 2), cw - gw);
+        let glassTop = Math.min(Math.max(0, y - gh / 2), ch - gh);
+
+        // 设置放大镜位置
+        glass.css({
+          left: glassLeft + "px",
+          top: glassTop + "px",
+        });
+
+        // 图片源
+        const imgSrc = img.attr("src");
+
+        // 计算背景尺寸（放大后的尺寸）
+        const bgW = cw * zoom;
+        const bgH = ch * zoom;
+
+        // 计算背景位置
+        const bgX = Math.round(x * zoom - gw / 2);
+        const bgY = Math.round(y * zoom - gh / 2);
+
+        // 设置背景
+        glass.css({
+          backgroundImage: `url(${imgSrc})`,
+          backgroundSize: `${bgW}px ${bgH}px`,
+          backgroundPosition: `-${bgX}px -${bgY}px`,
+        });
+
+        // 动态调整图片变换中心点，使图片放大效果跟随鼠标
+        const transformOriginX = (x / cw) * 100;
+        const transformOriginY = (y / ch) * 100;
+        img.css(
+          "transform-origin",
+          `${transformOriginX}% ${transformOriginY}%`
+        );
+      });
+
+      // 离开事件
+      container.on("mouseleave", function () {
+        glass.hide();
+
+        // 恢复原始大小
+        img.css({
+          transform: "scale(1)",
+          transition: "transform 0.3s ease",
+        });
+      });
+    });
+
+    // 减少数量
+    $("#decreaseQuantity").click(function () {
+      var quantity = parseInt($("#quantity").val());
+      if (quantity > 1) {
+        $("#quantity").val(quantity - 1);
+      }
+    });
+
+    // 增加数量
+    $("#increaseQuantity").click(function () {
+      var quantity = parseInt($("#quantity").val());
+      var max = parseInt($("#quantity").attr("max"));
+      if (quantity < max) {
+        $("#quantity").val(quantity + 1);
+      }
+    });
+
+    // 手动输入数量验证
+    $("#quantity").change(function () {
+      var quantity = parseInt($(this).val());
+      var max = parseInt($(this).attr("max"));
+
+      if (isNaN(quantity) || quantity < 1) {
+        $(this).val(1);
+      } else if (quantity > max) {
+        $(this).val(max);
+        alert("已设置为最大可购买数量：" + max);
+      }
+    });
+
+    // 加入购物车
+    $("#addToCartForm").submit(function (e) {
+      e.preventDefault();
+
+      // 检查登录状态
+      if (!checkLogin()) {
+        if (confirm("请先登录，是否跳转到登录页面？")) {
+          window.location.href =
+            "/user/login?redirect=" + encodeURIComponent(window.location.href);
+        }
+        return;
+      }
+
+      $.ajax({
+        url: "/cart/add",
+        type: "POST",
+        data: $(this).serialize(),
+        dataType: "json",
+        success: function (res) {
+          if (res.code === 1) {
+            // 成功加入购物车
+            alert(res.msg + "，可以在购物车中查看");
+          } else {
+            if (res.msg === "请先登录") {
+              if (confirm("请先登录，是否跳转到登录页面？")) {
+                window.location.href =
+                  "/user/login?redirect=" +
+                  encodeURIComponent(window.location.href);
+              }
+            } else {
+              alert(res.msg);
+            }
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("添加购物车错误:", status, error);
+          alert("服务器错误，请稍后再试");
+        },
+      });
+    });
+
+    // 立即购买
+    $("#buyNow").click(function () {
+      // 检查登录状态
+      if (!checkLogin()) {
+        if (confirm("请先登录，是否跳转到登录页面？")) {
+          window.location.href =
+            "/user/login?redirect=" + encodeURIComponent(window.location.href);
+        }
+        return;
+      }
+
+      // 先加入购物车，然后跳转到购物车页面
+      $.ajax({
+        url: "/cart/add",
+        type: "POST",
+        data: $("#addToCartForm").serialize(),
+        dataType: "json",
+        success: function (res) {
+          if (res.code === 1) {
+            // 成功加入购物车后直接跳转到购物车页面
+            window.location.href = "/cart";
+          } else {
+            if (res.msg === "请先登录") {
+              if (confirm("请先登录，是否跳转到登录页面？")) {
+                window.location.href =
+                  "/user/login?redirect=" +
+                  encodeURIComponent(window.location.href);
+              }
+            } else {
+              alert(res.msg);
+            }
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("立即购买错误:", status, error);
+          alert("服务器错误，请稍后再试");
+        },
+      });
+    });
+  });
+</script>
+{/block}
