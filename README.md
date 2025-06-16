@@ -25,7 +25,7 @@
 1. 克隆代码到本地
 
    ```
-   git clone https://your-repository-url/shop.git
+   git clone https://github.com/Hangover-U/thinkphp-shop.git
    ```
 
 2. 进入项目目录
@@ -46,7 +46,7 @@
    CREATE DATABASE IF NOT EXISTS thinkphp6_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
-   然后导入项目根目录下的`thinkphp6_shop.sql`文件
+   然后导入项目根目录下的`Dump20250615.sql`文件
 
 5. 配置数据库连接
    修改`config/database.php`文件中的数据库连接信息
@@ -159,74 +159,10 @@ shop/
     └── layout/             # 布局模板
 ```
 
-## 功能截图
-
-(此处可添加系统主要功能的截图)
-
 ## 开发团队
 
-- 开发者：[您的姓名/团队名称]
-- 联系方式：[您的联系方式]
-
-## 特殊功能实现逻辑
-
-### 商品图片放大镜效果
-
-在商品详情页实现了双重放大效果，提升用户体验：
-
-1. **双重放大效果实现**
-
-   - 整体图片放大：鼠标悬停时图片放大到 1.15 倍
-   - 局部高清放大：放大镜提供 4 倍局部放大效果
-   - 动态变换中心：图片放大以鼠标位置为中心点
-
-2. **关键代码实现**
-
-   ```javascript
-   // 配置
-   const zoom = 4; // 放大倍数
-
-   // 鼠标进入事件
-   container.on("mouseenter", function () {
-     // 显示放大镜
-     glass.show();
-
-     // 整体图片轻微放大效果
-     img.css({
-       transform: "scale(1.15)",
-       transition: "transform 0.3s ease",
-     });
-   });
-
-   // 移动事件处理
-   container.on("mousemove", function (e) {
-     // 计算放大镜位置...
-
-     // 动态调整图片变换中心点，使图片放大效果跟随鼠标
-     const transformOriginX = (x / cw) * 100;
-     const transformOriginY = (y / ch) * 100;
-     img.css("transform-origin", `${transformOriginX}% ${transformOriginY}%`);
-
-     // 设置放大镜背景
-     glass.css({
-       backgroundImage: `url(${imgSrc})`,
-       backgroundSize: `${bgW}px ${bgH}px`,
-       backgroundPosition: `-${bgX}px -${bgY}px`,
-     });
-   });
-   ```
-
-3. **CSS 样式**
-
-   - 使用 `transform` 和 `transform-origin` 实现图片放大效果
-   - 使用 `background-size` 和 `background-position` 实现放大镜效果
-   - 添加过渡动画提升用户体验
-
-4. **兼容不同类型商品**
-   - 电子产品：使用 `object-fit: contain` 保持原始比例
-   - 摩托车图片：使用 `object-fit: cover` 裁剪铺满容器
-
-想要实现该效果，可以参考 `shop/view/index/detail.html` 中的 JavaScript 代码和 `shop/view/layout/base.html` 中的 CSS 样式。
+- 开发者：Hangover-U
+- 联系方式：772774627@qq.com
 
 ## 版权信息
 
